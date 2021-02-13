@@ -23,22 +23,27 @@ function submitIssue(e) {
 
 const closeIssue = id => {
   const issues = JSON.parse(localStorage.getItem('issues'));
-  const currentIssue = issues.find(issue => issue.id === id);
+  const currentIssue = issues.find(issue => issue.id == id);
   currentIssue.status = 'Closed';
+  currentIssue.description = `<s>${currentIssue.description}</s>`;
   localStorage.setItem('issues', JSON.stringify(issues));
   fetchIssues();
 }
 
 const deleteIssue = id => {
   const issues = JSON.parse(localStorage.getItem('issues'));
-  const remainingIssues = issues.filter(issue.id !== id)
+  const remainingIssues = issues.filter(issue => issue.id != id)
   localStorage.setItem('issues', JSON.stringify(remainingIssues));
+  fetchIssues();
 }
 
 const fetchIssues = () => {
   const issues = JSON.parse(localStorage.getItem('issues'));
   const issuesList = document.getElementById('issuesList');
   issuesList.innerHTML = '';
+
+  document.getElementById('closed-issue').innerHTML = issues.filter(issue => issue.status == "Closed").length;
+  document.getElementById("total-issue").innerHTML = issues.length;
 
   for (var i = 0; i < issues.length; i++) {
     const { id, description, severity, assignedTo, status } = issues[i];
@@ -49,8 +54,8 @@ const fetchIssues = () => {
                               <h3> ${description} </h3>
                               <p><span class="glyphicon glyphicon-time"></span> ${severity}</p>
                               <p><span class="glyphicon glyphicon-user"></span> ${assignedTo}</p>
-                              <a href="#" onclick="setStatusClosed(${id})" class="btn btn-warning">Close</a>
-                              <a href="#" onclick="deleteIssue(${id})" class="btn btn-danger">Delete</a>
+                              <button onclick="closeIssue(${id})" class="btn btn-warning">Close</button>
+                              <button onclick="deleteIssue(${id})" class="btn btn-danger">Delete</button>
                               </div>`;
   }
 }
